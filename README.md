@@ -616,12 +616,126 @@ wrangler deploy
 
 ---
 
+## CLI Tool (api.sh)
+
+A convenient bash CLI for easy access to all API features.
+
+### Setup
+
+```bash
+chmod +x api.sh
+
+# Set environment variables
+export NOORIS_API_KEY="your-api-key"
+export NOORIS_API_URL="https://your-worker.workers.dev"
+
+# Or inline
+NOORIS_API_KEY="key" ./api.sh <command>
+```
+
+### Commands
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `models` | List available models | `./api.sh models` |
+| `chat <msg>` | Chat completion | `./api.sh chat "Hello!"` |
+| `complete <prompt>` | Text completion | `./api.sh complete "Write a poem"` |
+| `embed <text>` | Generate embeddings | `./api.sh embed "Hello world"` |
+| `image <prompt>` | Text-to-Image | `./api.sh image "A sunset"` |
+| `img2img <file> <prompt>` | Image-to-Image | `./api.sh img2img input.png "blue style"` |
+| `variation <file>` | Image variations | `./api.sh variation photo.png` |
+| `transcribe <file>` | Speech-to-text | `./api.sh transcribe audio.mp3` |
+| `translate-audio <file> <lang>` | Audio translation | `./api.sh translate-audio audio.mp3 spanish` |
+| `tts <text>` | Text-to-speech | `./api.sh tts "Hello world"` |
+| `classify <text>` | Text classification | `./api.sh classify "I love this!"` |
+| `translate <text> <lang>` | Translation | `./api.sh translate "Hello" spanish` |
+| `summarize <text>` | Summarization | `./api.sh summarize "Long text..."` |
+| `vision <file> [question]` | Image analysis | `./api.sh vision photo.jpg "What is this?"` |
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-m, --model <model>` | Specify model | `gpt-4` |
+| `-t, --temperature <n>` | Set temperature | `0.7` |
+| `-o, --max-tokens <n>` | Max tokens | `256` |
+| `-s, --size <WxH>` | Image size | `1024x1024` |
+| `-n, --count <n>` | Number of images | `1` |
+| `-f, --format <format>` | Output format | `text` |
+| `-S, --stream` | Enable streaming | `false` |
+| `-c, --counter <n>` | Set image counter | - |
+| `-r, --reset` | Reset image counter | - |
+| `--system <msg>` | System message | - |
+| `--style <style>` | Summarize style | `concise` |
+| `--labels <a,b,c>` | Classification labels | `positive,negative,neutral` |
+| `--source <lang>` | Source language | - |
+| `--strength <n>` | Image strength | `0.8` |
+| `--voice <voice>` | TTS voice | `alloy` |
+
+### Examples
+
+```bash
+# Chat
+./api.sh chat "What is the capital of France?"
+
+# Generate 3 images
+./api.sh image "A beautiful mountain" -n 3
+
+# Custom size and model
+./api.sh image "A cat" -s 512x512 -m dall-e-2
+
+# Chat with system prompt
+./api.sh chat "Explain quantum physics" --system "You are a physicist"
+
+# Image-to-Image
+./api.sh img2img input.png "transform to oil painting" --strength 0.6
+
+# Transcribe audio
+./api.sh transcribe recording.mp3
+
+# Translate text
+./api.sh translate "Good morning" japanese --source english
+
+# Summarize with bullet points
+./api.sh summarize "Long article text..." --style bullet
+
+# Vision analysis
+./api.sh vision photo.jpg "Describe this image"
+
+# Generate multiple images (auto-saves as image1.png, image2.png...)
+./api.sh image "A sunset" -n 5
+# Output: image1.png, image2.png, image3.png, image4.png, image5.png
+
+# Reset image counter
+./api.sh image "New series" -r
+
+# Set specific counter
+./api.sh image "Continue" -c 100
+
+# Custom labels for classification
+./api.sh classify "The stock market crashed" --labels "finance,sports,tech,politics"
+```
+
+### Image Auto-Save
+
+Images are automatically saved with incrementing filenames:
+- `image1.png`
+- `image2.png`
+- `image3.png`
+- ...
+
+Counter is stored in `~/.nooris_image_counter`. Use `-r` to reset or `-c <n>` to set.
+
+---
+
 ## Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `API_KEY` | Yes | Secret key for API authentication |
 | `AI` | Yes | Cloudflare AI binding |
+| `NOORIS_API_URL` | No | API base URL (CLI only) |
+| `NOORIS_API_KEY` | No | API key (CLI only) |
 
 ---
 
