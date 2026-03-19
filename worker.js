@@ -250,9 +250,8 @@ async function handleImageGenerations(request, env) {
     }
 
     const modelId = resolveModel(model, "image");
-    const [width, height] = size.split("x").map(Number);
 
-    const result = await env.AI.run(modelId, { prompt, width, height, num_steps: 20 });
+    const result = await env.AI.run(modelId, { prompt });
 
     if (response_format === "b64_json") {
         const base64 = arrayBufferToBase64(result);
@@ -285,9 +284,7 @@ async function handleImageEdits(request, env) {
 
         const result = await env.AI.run(modelId, {
             prompt,
-            image: base64Image,
-            strength,
-            num_steps: 20
+            image: base64Image
         });
 
         return new Response(result, { headers: { "Content-Type": "image/png" } });
@@ -301,7 +298,7 @@ async function handleImageEdits(request, env) {
     }
 
     const modelId = resolveModel(model, "img2img");
-    const result = await env.AI.run(modelId, { prompt, image, strength, num_steps: 20 });
+    const result = await env.AI.run(modelId, { prompt, image });
 
     return new Response(result, { headers: { "Content-Type": "image/png" } });
 }
@@ -320,9 +317,7 @@ async function handleImageVariations(request, env) {
 
         const result = await env.AI.run(modelId, {
             prompt,
-            image: base64Image,
-            strength: 0.6,
-            num_steps: 20
+            image: base64Image
         });
 
         return new Response(result, { headers: { "Content-Type": "image/png" } });
