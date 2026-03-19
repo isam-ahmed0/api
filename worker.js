@@ -243,25 +243,20 @@ async function handleEmbeddings(request, env) {
 
 async function handleImageGenerations(request, env) {
     const body = await request.json();
-    const { model, prompt, n = 1, size = "1024x1024", response_format = "url" } = body;
+    const { prompt } = body;
 
     if (!prompt) {
         return json({ error: { message: "prompt is required", type: "invalid_request_error" } }, 400);
     }
 
-    const modelId = resolveModel(model, "image");
+    const result = await env.AI.run(
+        "@cf/stabilityai/stable-diffusion-xl-base-1.0",
+        { prompt }
+    );
 
-    const result = await env.AI.run(modelId, { prompt });
-
-    if (response_format === "b64_json") {
-        const base64 = arrayBufferToBase64(result);
-        return json({
-            created: Math.floor(Date.now() / 1000),
-            data: Array(n).fill(null).map(() => ({ b64_json: base64 }))
-        });
-    }
-
-    return new Response(result, { headers: { "Content-Type": "image/png" } });
+    return new Response(result, {
+        headers: { "Content-Type": "image/png" },
+    });
 }
 
 async function handleImageEdits(request, env) {
